@@ -16,6 +16,8 @@ use std::{
   sync::Arc,
 };
 
+pub mod db;
+
 #[derive(Debug)]
 pub struct Router<F> {
   routes: HashMap<Method, HashMap<Cow<'static, str>, Arc<F>>>,
