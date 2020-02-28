@@ -74,6 +74,17 @@ fn run() -> Result<(), Box<dyn Error>> {
         path.push("src");
         path.push("main.rs");
         files::main_rs(&path)?;
+        path.pop();
+        info!("Wrote boilerplate code to '{}'", path.display());
+        path.pop();
+        path.push("rustfmt.toml");
+        files::rustfmt_toml(&path)?;
+        path.pop();
+        path.push("rust-toolchain");
+        files::rust_toolchain(&path)?;
+        path.pop();
+        info!("Wrote boilerplate configs to {}", path.display());
+        info!("Finished setting up your project.");
       }
     }
   }
@@ -86,12 +97,26 @@ struct Manifest {
   package: HashMap<String, Value>,
   #[serde(serialize_with = "toml::ser::tables_last")]
   dependencies: HashMap<String, Value>,
+  #[serde(default)]
+  workspace: HashMap<String, Value>,
 }
 
 fn setup_deps(path: &Path) -> Result<(), Box<dyn Error>> {
   let mut manifest = toml::from_slice::<Manifest>(&fs::read(&path)?)?;
 
+  #[cfg(feature = "testing")]
+  "min-lib = { path = '../../min-lib' }" // Assume we're in min-cli for testing
+    .parse::<Value>()?
+    .as_table()
+    .unwrap()
+    .iter()
+    .for_each(|(k, v)| {
+      manifest.dependencies.insert(k.into(), v.to_owned());
+    });
+
+  #[cfg(not(feature = "testing"))]
   manifest.dependencies.insert("min-lib".into(), "0.1".into());
+  manifest.dependencies.insert("hyper".into(), "0.13".into());
   manifest.dependencies.insert("tracing".into(), "0.1".into());
   manifest
     .dependencies

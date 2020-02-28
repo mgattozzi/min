@@ -15,6 +15,7 @@ use std::{
   future::Future,
   sync::Arc,
 };
+use tracing::info;
 
 pub mod db;
 
@@ -35,14 +36,18 @@ where
   }
 
   pub fn get(mut self, path: impl Into<Cow<'static, str>>, handler: F) -> Self {
+    let path = path.into();
+    info!("Added route: GET {}", path);
     let routes = self.routes.entry(Method::GET).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
   pub fn put(mut self, path: impl Into<Cow<'static, str>>, handler: F) -> Self {
+    let path = path.into();
+    info!("Added route: PUT {}", path);
     let routes = self.routes.entry(Method::PUT).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -51,8 +56,10 @@ where
     path: impl Into<Cow<'static, str>>,
     handler: F,
   ) -> Self {
+    let path = path.into();
+    info!("Added route: DELETE {}", path);
     let routes = self.routes.entry(Method::DELETE).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -61,8 +68,10 @@ where
     path: impl Into<Cow<'static, str>>,
     handler: F,
   ) -> Self {
+    let path = path.into();
+    info!("Added route: POST {}", path);
     let routes = self.routes.entry(Method::POST).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -71,8 +80,10 @@ where
     path: impl Into<Cow<'static, str>>,
     handler: F,
   ) -> Self {
+    let path = path.into();
+    info!("Added route: TRACE {}", path);
     let routes = self.routes.entry(Method::TRACE).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -81,8 +92,10 @@ where
     path: impl Into<Cow<'static, str>>,
     handler: F,
   ) -> Self {
+    let path = path.into();
+    info!("Added route: PATCH {}", path);
     let routes = self.routes.entry(Method::PATCH).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -91,8 +104,10 @@ where
     path: impl Into<Cow<'static, str>>,
     handler: F,
   ) -> Self {
+    let path = path.into();
+    info!("Added route: OPTIONS {}", path);
     let routes = self.routes.entry(Method::OPTIONS).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -101,8 +116,10 @@ where
     path: impl Into<Cow<'static, str>>,
     handler: F,
   ) -> Self {
+    let path = path.into();
+    info!("Added route: HEAD {}", path);
     let routes = self.routes.entry(Method::HEAD).or_insert(HashMap::new());
-    routes.insert(path.into(), Arc::new(handler));
+    routes.insert(path, Arc::new(handler));
     self
   }
 
@@ -124,8 +141,8 @@ where
         }))
       }
     });
-    Server::bind(&([0, 0, 0, 0], 8080).into())
-      .serve(service_fn)
-      .await
+    let addr = ([0, 0, 0, 0], 8080).into();
+    info!("Listening on {}", addr);
+    Server::bind(&addr).serve(service_fn).await
   }
 }

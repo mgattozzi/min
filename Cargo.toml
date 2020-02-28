@@ -3,3 +3,6 @@ members = [
   "min-cli",
   "min-lib"
 ]
+exclude = [
+  "min-cli/blah"
+]
