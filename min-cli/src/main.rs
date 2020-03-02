@@ -75,16 +75,19 @@ fn run() -> Result<(), Box<dyn Error>> {
         path.push("main.rs");
         files::main_rs(&path)?;
         path.pop();
-        info!("Wrote boilerplate code to '{}'", path.display());
+        info!(
+          "Added files for basic server skeleton to {}",
+          path.display()
+        );
         path.pop();
         path.push("rustfmt.toml");
-        files::rustfmt_toml(&path)?;
+        files::rustfmt(&path)?;
+        info!("Added empty rustfmt configurationto {}", path.display());
         path.pop();
         path.push("rust-toolchain");
         files::rust_toolchain(&path)?;
+        info!("Added default rustc vesion to {}", path.display());
         path.pop();
-        info!("Wrote boilerplate configs to {}", path.display());
-        info!("Finished setting up your project.");
       }
     }
   }
@@ -97,6 +100,7 @@ struct Manifest {
   package: HashMap<String, Value>,
   #[serde(serialize_with = "toml::ser::tables_last")]
   dependencies: HashMap<String, Value>,
+  #[cfg(feature = "testing")]
   #[serde(default)]
   workspace: HashMap<String, Value>,
 }
@@ -104,8 +108,10 @@ struct Manifest {
 fn setup_deps(path: &Path) -> Result<(), Box<dyn Error>> {
   let mut manifest = toml::from_slice::<Manifest>(&fs::read(&path)?)?;
 
+  #[cfg(not(feature = "testing"))]
+  manifest.dependencies.insert("min-lib".into(), "0.1".into());
   #[cfg(feature = "testing")]
-  "min-lib = { path = '../../min-lib' }" // Assume we're in min-cli for testing
+  "min-lib = { version = '0.1', path = '../../min-lib'}"
     .parse::<Value>()?
     .as_table()
     .unwrap()
@@ -114,9 +120,6 @@ fn setup_deps(path: &Path) -> Result<(), Box<dyn Error>> {
       manifest.dependencies.insert(k.into(), v.to_owned());
     });
 
-  #[cfg(not(feature = "testing"))]
-  manifest.dependencies.insert("min-lib".into(), "0.1".into());
-  manifest.dependencies.insert("hyper".into(), "0.13".into());
   manifest.dependencies.insert("tracing".into(), "0.1".into());
   manifest
     .dependencies
@@ -127,6 +130,7 @@ fn setup_deps(path: &Path) -> Result<(), Box<dyn Error>> {
   manifest
     .dependencies
     .insert("serde_json".into(), "1.0".into());
+  manifest.dependencies.insert("hyper".into(), "0.13".into());
 
   "serde = { version = '1.0', features = ['derive'] }"
     .parse::<Value>()?

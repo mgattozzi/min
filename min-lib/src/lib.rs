@@ -37,7 +37,7 @@ where
 
   pub fn get(mut self, path: impl Into<Cow<'static, str>>, handler: F) -> Self {
     let path = path.into();
-    info!("Added route: GET {}", path);
+    info!("Added path GET {}", path);
     let routes = self.routes.entry(Method::GET).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -45,7 +45,7 @@ where
 
   pub fn put(mut self, path: impl Into<Cow<'static, str>>, handler: F) -> Self {
     let path = path.into();
-    info!("Added route: PUT {}", path);
+    info!("Added path PUT {}", path);
     let routes = self.routes.entry(Method::PUT).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -57,7 +57,7 @@ where
     handler: F,
   ) -> Self {
     let path = path.into();
-    info!("Added route: DELETE {}", path);
+    info!("Added path DELETE {}", path);
     let routes = self.routes.entry(Method::DELETE).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -69,7 +69,7 @@ where
     handler: F,
   ) -> Self {
     let path = path.into();
-    info!("Added route: POST {}", path);
+    info!("Added path POST {}", path);
     let routes = self.routes.entry(Method::POST).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -81,7 +81,7 @@ where
     handler: F,
   ) -> Self {
     let path = path.into();
-    info!("Added route: TRACE {}", path);
+    info!("Added path TRACE {}", path);
     let routes = self.routes.entry(Method::TRACE).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -93,7 +93,7 @@ where
     handler: F,
   ) -> Self {
     let path = path.into();
-    info!("Added route: PATCH {}", path);
+    info!("Added path PATCH {}", path);
     let routes = self.routes.entry(Method::PATCH).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -105,7 +105,7 @@ where
     handler: F,
   ) -> Self {
     let path = path.into();
-    info!("Added route: OPTIONS {}", path);
+    info!("Added path OPTIONS {}", path);
     let routes = self.routes.entry(Method::OPTIONS).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -117,7 +117,7 @@ where
     handler: F,
   ) -> Self {
     let path = path.into();
-    info!("Added route: HEAD {}", path);
+    info!("Added path HEAD {}", path);
     let routes = self.routes.entry(Method::HEAD).or_insert(HashMap::new());
     routes.insert(path, Arc::new(handler));
     self
@@ -142,7 +142,7 @@ where
       }
     });
     let addr = ([0, 0, 0, 0], 8080).into();
-    info!("Listening on {}", addr);
+    info!("Starting sever on {}", addr);
     Server::bind(&addr).serve(service_fn).await
   }
 }

@@ -1,7 +1,7 @@
 use hyper::{Body, Request, Response};
 use min::Router;
 use std::error::Error;
-use tracing::error;
+use tracing::{error, event, instrument, Level};
 use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
@@ -19,6 +19,8 @@ async fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[instrument]
 async fn echo(req: Request<Body>) -> Response<Body> {
+    event!(Level::INFO, "Received a request");
     Response::new(req.into_body())
 }

@@ -9,7 +9,7 @@ pub fn main_rs(path: &Path) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
-pub fn rustfmt_toml(path: &Path) -> Result<(), Box<dyn Error>> {
+pub fn rustfmt(path: &Path) -> Result<(), Box<dyn Error>> {
   fs::write(path, include_str!("../files/rustfmt.toml"))?;
   Ok(())
 }
