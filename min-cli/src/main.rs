@@ -1,3 +1,4 @@
+use db::DB;
 use serde::{
   Deserialize,
   Serialize,
@@ -20,6 +21,7 @@ use tracing::{
 };
 use tracing_subscriber::FmtSubscriber;
 
+mod db;
 mod files;
 
 #[derive(StructOpt, Debug)]
@@ -32,6 +34,8 @@ pub enum Opt {
 #[derive(StructOpt, Debug)]
 pub struct New {
   path: PathBuf,
+  #[structopt(default = "DB::Postgresql")]
+  prod_db: DB,
 }
 
 fn main() {
@@ -88,6 +92,11 @@ fn run() -> Result<(), Box<dyn Error>> {
         files::rust_toolchain(&path)?;
         info!("Added default rustc vesion to {}", path.display());
         path.pop();
+        path.push("db");
+        db::setup_db(&path, new_opts.prod_db)?;
+        info!(
+          "Finished initializing Dev/Prod Databases, Schemas, and Migrations"
+        );
       }
     }
   }
