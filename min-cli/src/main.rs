@@ -1,4 +1,3 @@
-use db::DB;
 use serde::{
   Deserialize,
   Serialize,
@@ -34,8 +33,6 @@ pub enum Opt {
 #[derive(StructOpt, Debug)]
 pub struct New {
   path: PathBuf,
-  #[structopt(default = "DB::Postgresql")]
-  prod_db: DB,
 }
 
 fn main() {
@@ -93,7 +90,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         info!("Added default rustc vesion to {}", path.display());
         path.pop();
         path.push("db");
-        db::setup_db(&path, new_opts.prod_db)?;
+        db::setup_db(&mut path)?;
         info!(
           "Finished initializing Dev/Prod Databases, Schemas, and Migrations"
         );
